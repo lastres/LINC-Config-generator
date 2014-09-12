@@ -1,0 +1,69 @@
+[{epcap,
+    %% epcap is a LINC dependency that reads packets from the eth interfaces (not
+            %% tap interfaces). It's a wrapper for pcap.
+        [
+        %% Setting this option to true will enable logging in libpcap. The log
+        %% messages will be printed to:
+        %%    a. rel/linc/log/erlang.log.N file when started as daemon (more
+                %%       information here: http://www.erlang.org/doc/man/run_erl.html under
+                %%       "Notes concerning the log files"),
+    %%    b. the application console when started in console mode.
+    {verbose, false},
+    %% This options sets interval of printing pcap statistics. The value is in
+        %% seconds.
+        %% NOTE: This option will have effect ONLY if verbose is set to true.
+        {stats_interval, 10}
+    %% This option allows manipulating internal buffer size of pcap. By
+        %% increasing this buffer dropping packet can be mitigated. The value is in
+        %% bytes.
+        %% , {buffer_size, 73400320}
+    ]},
+
+{enetconf,
+    [
+    {capabilities, [{base, {1, 0}},
+        {base, {1, 1}},
+        {startup, {1, 0}},
+        {'writable-running', {1, 0}}]},
+    {callback_module, linc_ofconfig},
+    {sshd_ip, any},
+    {sshd_port, 1830},
+    {sshd_user_passwords,
+        [
+        {"linc", "linc"}
+        ]}
+        ]},
+
+{lager,
+    [
+    {handlers,
+        [
+        {lager_console_backend, info},
+        {lager_file_backend,
+            [
+            {"log/error.log", error, 10485760, "$D0", 5},
+            {"log/console.log", info, 10485760, "$D0", 5}
+            ]}
+            ]}
+            ]},
+
+{sasl,
+    [
+    {sasl_error_logger, {file, "log/sasl-error.log"}},
+    {errlog_type, error},
+    {error_logger_mf_dir, "log/sasl"},      % Log directory
+    {error_logger_mf_maxbytes, 10485760},   % 10 MB max file size
+    {error_logger_mf_maxfiles, 5}           % 5 files max
+    ]},
+
+{sync,
+    %% Sync is a developer utility that reloads changed beam files into the VM
+        %% without the need to restart it. It is started when the Makefile's dev
+        %% target is invoked to start the development environment.
+        [
+        %% By default only the procket module is excluded from the scan process
+        %% as it does not support reloading.
+        {excluded_modules, [procket]}
+    ]}
+
+    ].

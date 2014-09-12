@@ -1,0 +1,12 @@
+{application, config_generator,
+    [
+    {description, ""},
+    {vsn, "1"},
+    {registered, []},
+    {applications, [
+        kernel,
+        stdlib
+            ]},
+    {mod, { config_generator, []}},
+    {env, []}
+    ]}.
